@@ -1,10 +1,18 @@
 import java.util.*;
 
 public class Main {
+    static class Pair {
+        int value, index;
+
+        Pair(int v, int i) {
+            value = v;
+            index = i;
+        }
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        // Input lena
         int n = sc.nextInt();
         int[] arr = new int[n];
 
@@ -12,28 +20,44 @@ public class Main {
             arr[i] = sc.nextInt();
         }
 
+        // Pair array (value + original index)
+        Pair[] p = new Pair[n];
+        for (int i = 0; i < n; i++) {
+            p[i] = new Pair(arr[i], i);
+        }
+
+        // Sort based on value
+        Arrays.sort(p, (a, b) -> a.value - b.value);
+
+        boolean[] visited = new boolean[n];
         int swaps = 0;
 
-        // Bubble Sort
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (arr[j] > arr[j + 1]) {
-                    // swap
-                    int temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swaps++;
-                }
+        for (int i = 0; i < n; i++) {
+
+            // already visited or already correct
+            if (visited[i] || p[i].index == i)
+                continue;
+
+            int cycleSize = 0;
+            int j = i;
+
+            while (!visited[j]) {
+                visited[j] = true;
+                j = p[j].index;
+                cycleSize++;
+            }
+
+            if (cycleSize > 0) {
+                swaps += (cycleSize - 1);
             }
         }
 
-        // Sorted array print
+        // Print sorted array
         for (int i = 0; i < n; i++) {
-            System.out.print(arr[i]);
+            System.out.print(p[i].value);
             if (i < n - 1) System.out.print(" ");
         }
 
-        // Swap count print
         System.out.println();
         System.out.print("Swaps: " + swaps);
     }
